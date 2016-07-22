@@ -1,0 +1,74 @@
+﻿<%@ Master Language="VB" CodeFile="MasterPage.master.vb" Inherits="MasterPage" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <!-- meta data for search engines and browsers-->
+    <meta name="Author", content="Patrik Singer" />
+    <meta name="keywords" content="webay warwick wbs web applications development" />
+    <title>weBay - like eBay, just better</title>
+    <link href="Styles/StyleSheet.css" rel="stylesheet" />
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css" /> <!-- include pure-min.css for smoother design-->
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+    <script src="js/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="js/jquery-ui.js"></script>
+    <script type="text/javascript">
+        function txtTitleChanged() { //this function gets search result in json format and it is called
+            $.ajax({                 //everytime somebody writes something in the searchbox
+                type: "POST",
+                url: "Search.aspx/txtTitleChanged",
+                data: '{Title: "' + txtTitle.value + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: onSuccess,
+                failure: function (AjaxResponse) {
+                    alert("Failed: " + AjaxResponse.d);
+                }
+            });
+        }
+        function onSuccess(AjaxResponse) {
+            if (txtTitle.value.length > 0) {
+                window.location.replace("Search.aspx?Search=" + txtTitle.value); //redirect user automatically to the search page
+            }                                                                    //if there is a result
+        }
+    </script>
+</head>
+<body>
+    <div id="wrapper">
+        <form id="form1" runat="server">
+            <div id="divHeader">
+                <div style="float: left;">
+                <asp:Label ID="lblUserName" runat="server">Hello stranger! </asp:Label>
+                <span id="spanWeather"></span></div>
+                <div style="float:right;">
+                <asp:Button class="buttonWhite headerButton" ID="btnBidWon" runat="server" Text="Item won! Leave feedback" CausesValidation="False" ForeColor="Red" Visible="False" />
+                <asp:Button class="buttonWhite headerButton" ID="btnNotif" runat="server" Text="New notification!" CausesValidation="False" ForeColor="Red" Visible="False" />
+                <asp:Button class="button headerButton" ID="btnLogin" runat="server" Text="Login" PostBackUrl="~/Login.aspx" CausesValidation="False" Width="50px" />
+                <asp:Button class="button headerButton" ID="btnSignup" runat="server" Text="Sign Up" PostBackUrl="~/SignUp.aspx" CausesValidation="False" />
+                <asp:Button class="button headerButton" ID="btnMyAccount" runat="server" Text="My Account" CausesValidation="False" PostBackUrl="~/MyAccount.aspx?Tab=Items&amp;Page=Selling&amp;Active=True&amp;Inactive=False&amp;Positive=False&amp;Negative=False&amp;Neutral=False&amp;" />
+                <asp:Button class="button headerButton" ID="btnLogOut" runat="server" Text="Logout" CausesValidation="False" Width="68px" />
+                </div>
+            </div>
+            <div id="divMenu">
+                <a href="Default.aspx" style="text-decoration: none;">
+                    <asp:Image class="menu" ID="imgWeBay" runat="server" ImageUrl="~/Pictures/Webay_2015-16.jpg" Height="43px" Width="187px" />
+                </a>
+                <asp:Panel ID="Panel1" runat="server" DefaultButton="btnSearch" Style="display: inline">
+                    <!-- textbox autocomplete set to off, so it doesn't intervene with custom autcomplete feature. the txtTitlaChanged() function is called on every keyup to fill autocomplete-->
+                    <asp:TextBox autocomplete="off" class="menu ui-widget" ID="txtTitle" onkeyup="txtTitleChanged()" list="result" type="text" runat="server" Height="30px" Width="510px"></asp:TextBox>
+                </asp:Panel>
+                <asp:Button class="menu buttonWhite" ID="btnSearch" runat="server" Text="Search" CausesValidation="False" Width="69px" />
+                <asp:Button class="menu button" ID="btnSell" runat="server" Text="Sell" CausesValidation="False" Width="69px" />
+            </div>
+            <div id="MyMenu1"></div> <!-- div for custom menu downloaded from: http://www.dropdownmenugenerator.com/ -->
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </form>
+    </div>
+    <script src="js/weather.js"></script> <!-- javascript that asynchronously gets the current weather at user's location written by me -->
+    <script src="js/MyMenu1.js"></script>  <!-- js for custom menu downloaded from: http://www.dropdownmenugenerator.com/ -->
+</body>
+</html>
